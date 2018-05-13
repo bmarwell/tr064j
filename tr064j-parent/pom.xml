@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <artifactId>tr064j</artifactId>
+    <groupId>de.bmarwell</groupId>
+    <version>1.0.0-SNAPSHOT</version>
+  </parent>
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>tr064j-parent</artifactId>
+
+  <packaging>pom</packaging>
+
+  <properties>
+    <dependency.immutables.version>2.5.6</dependency.immutables.version>
+    <dependency.cxf.version>3.2.4</dependency.cxf.version>
+    <dependency.slf4j.version>1.7.25</dependency.slf4j.version>
+    <dependency.logback.version>1.2.3</dependency.logback.version>
+
+    <!-- test dependency versions -->
+    <dependency.junit5.version>5.2.0</dependency.junit5.version>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <!-- logging -->
+      <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${dependency.slf4j.version}</version>
+      </dependency>
+      <!-- https://mvnrepository.com/artifact/ch.qos.logback/logback-classic -->
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <version>${dependency.logback.version}</version>
+        <scope>test</scope>
+      </dependency>
+
+
+
+      <!-- Test dependencies -->
+      <dependency>
+        <groupId>org.junit</groupId>
+        <artifactId>junit-bom</artifactId>
+        <version>${dependency.junit5.version}</version>
+        <scope>test</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+
+</project>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/tr064j.iml" filepath="$PROJECT_DIR$/tr064j.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tr064j-build.iml" filepath="$PROJECT_DIR$/tr064j-build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tr064j-client/tr064j-client.iml" filepath="$PROJECT_DIR$/tr064j-client/tr064j-client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tr064j-parent/tr064jparent.iml" filepath="$PROJECT_DIR$/tr064j-parent/tr064jparent.iml" />
+    </modules>
+  </component>
+</project>
