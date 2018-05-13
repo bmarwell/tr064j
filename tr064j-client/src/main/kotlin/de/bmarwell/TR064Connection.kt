@@ -62,4 +62,4 @@ class TR064Connection(val params: TR064ConnectionParameters) : Closeable {
     }
 }
 
-data class TR064ConnectionParameters(val uri: URI);
+data class TR064ConnectionParameters(val uri: URI)
