@@ -8,3 +8,6 @@ jdk:
 cache:
   directories:
     - '$HOME/.m2'
+
+install:
+  - mvn -U org.apache.maven.plugins:maven-dependency-plugin:2.1:resolve --batch-mode -Dmaven.javadoc.skip=true -DskipTests=true --settings .travis.settings.xml
