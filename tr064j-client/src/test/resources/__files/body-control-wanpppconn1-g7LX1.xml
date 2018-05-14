@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/"
+  s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+  <s:Header>
+    <h:NextChallenge xmlns:h="http://soap-authentication.org/digest/2001/10/" s:mustUnderstand="1">
+      <Status>Authenticated</Status>
+      <Nonce>4E1204CF7B2F0453</Nonce>
+      <Realm>F!Box SOAP-Auth</Realm>
+    </h:NextChallenge>
+  </s:Header>
+  <s:Body>
+    <u:GetInfoResponse xmlns:u="urn:dslforum-org:service:WANPPPConnection:1">
+      <NewEnable>1</NewEnable>
+      <NewConnectionStatus>Connected</NewConnectionStatus>
+      <NewPossibleConnectionTypes>IP_Routed, IP_Bridged</NewPossibleConnectionTypes>
+      <NewConnectionType>IP_Routed</NewConnectionType>
+      <NewName>internet</NewName>
+      <NewUptime>11076</NewUptime>
+      <NewUpstreamMaxBitRate>35043622</NewUpstreamMaxBitRate>
+      <NewDownstreamMaxBitRate>2323484</NewDownstreamMaxBitRate>
+      <NewLastConnectionError>ERROR_NONE</NewLastConnectionError>
+      <NewIdleDisconnectTime>0</NewIdleDisconnectTime>
+      <NewRSIPAvailable>0</NewRSIPAvailable>
+      <NewUserName>aUserName</NewUserName>
+      <NewNATEnabled>1</NewNATEnabled>
+      <NewExternalIPAddress>127.0.4.4</NewExternalIPAddress>
+      <NewDNSServers>4.4.4.4, 8.8.8.8</NewDNSServers>
+      <NewMACAddress>24:65:11:EE:05:30</NewMACAddress>
+      <NewConnectionTrigger>AlwaysOn</NewConnectionTrigger>
+      <NewLastAuthErrorInfo></NewLastAuthErrorInfo>
+      <NewMaxCharsUsername>128</NewMaxCharsUsername>
+      <NewMinCharsUsername>3</NewMinCharsUsername>
+      <NewAllowedCharsUsername>
+        0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-._@()#/%[]{}*+§$&amp;=?!:;,
+      </NewAllowedCharsUsername>
+      <NewMaxCharsPassword>64</NewMaxCharsPassword>
+      <NewMinCharsPassword>3</NewMinCharsPassword>
+      <NewAllowedCharsPassword>
+        0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-._@()#/%[]{}*+§$&amp;=?!:;,
+      </NewAllowedCharsPassword>
+      <NewTransportType>PPPoE</NewTransportType>
+      <NewRouteProtocolRx>Off</NewRouteProtocolRx>
+      <NewPPPoEServiceName></NewPPPoEServiceName>
+      <NewRemoteIPAddress></NewRemoteIPAddress>
+      <NewPPPoEACName>ABCJ03</NewPPPoEACName>
+      <NewDNSEnabled>1</NewDNSEnabled>
+      <NewDNSOverrideAllowed>1</NewDNSOverrideAllowed>
+    </u:GetInfoResponse>
+  </s:Body>
+</s:Envelope>

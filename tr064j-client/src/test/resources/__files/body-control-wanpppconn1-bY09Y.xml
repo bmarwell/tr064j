@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+<s:Header>
+<h:Challenge xmlns:h="http://soap-authentication.org/digest/2001/10/" s:mustUnderstand="1">
+<Status>Unauthenticated</Status>
+<Nonce>F19555A7A416CB14</Nonce>
+<Realm>F!Box SOAP-Auth</Realm>
+</h:Challenge>
+</s:Header>
+<s:Body>
+<s:Fault>
+<faultcode>s:Client</faultcode>
+<faultstring>UPnPError</faultstring>
+<detail>
+<UPnPError xmlns="urn:dslforum-org:control-1-0">
+<errorCode>503</errorCode>
+<errorDescription>Auth. failed</errorDescription>
+</UPnPError>
+</detail>
+</s:Fault>
+</s:Body>
+</s:Envelope>

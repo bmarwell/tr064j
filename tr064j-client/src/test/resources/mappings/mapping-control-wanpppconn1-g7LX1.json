@@ -1,0 +1,24 @@
+{
+  "id": "50d0c31e-5add-3292-9881-2b4d36185660",
+  "request": {
+    "url": "/upnp/control/wanpppconn1",
+    "method": "POST",
+    "bodyPatterns": [
+      {
+        "equalToXml": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"><s:Header><h:ClientAuth xmlns:h=\"http://soap-authentication.org/digest/2001/10/\" s:mustUnderstand=\"1\"><UserID>admin</UserID><Nonce>F19555A7A416CB14</Nonce><Auth>a92c2d33a41daeee24a07104f4135fc6</Auth><Realm>F!Box SOAP-Auth</Realm></h:ClientAuth></s:Header><s:Body><u:GetInfo xmlns:u=\"urn:dslforum-org:service:WANPPPConnection:1\"/></s:Body></s:Envelope>"
+      }
+    ]
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "body-control-wanpppconn1-g7LX1.xml",
+    "headers": {
+      "DATE": "Mon, 14 May 2018 09:19:04 GMT",
+      "SERVER": "FRITZ!Box Fon WLAN 7390 UPnP/1.0 AVM FRITZ!Box Fon WLAN 7390 84.06.83",
+      "CONNECTION": "keep-alive",
+      "CONTENT-TYPE": "text/xml; charset=\"utf-8\"",
+      "EXT": ""
+    }
+  },
+  "uuid": "50d0c31e-5add-3292-9881-2b4d36185660"
+}
