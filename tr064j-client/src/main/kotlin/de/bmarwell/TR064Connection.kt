@@ -21,7 +21,6 @@ import de.bmarwell.util.realmAndNonce
 import de.bmarwell.util.toSoapMessage
 import de.bmarwell.util.toUnicodeString
 import org.slf4j.LoggerFactory
-import java.io.ByteArrayOutputStream
 import java.io.Closeable
 import java.net.URI
 import java.nio.charset.StandardCharsets
@@ -36,24 +35,23 @@ class TR064Connection(val params: TR064ConnectionParameters) : Closeable {
     private val messageFactory = MessageFactory.newInstance()!!
 
     fun getSecurityPort(): Int {
+        val urn = "urn:dslforumorg:service:DeviceInfo:1"
+        val method = "GetSecurityPort"
+
         val message = Tr064SoapHelper.createSoapMessageWithChallenge(
                 msgFactory = messageFactory,
                 action = "GetSecurityPort",
-                urn = "urn:dslforumorg:service:DeviceInfo:1",
+                urn = urn,
                 params = params)
 
-        val msg = ByteArrayOutputStream()
-        message.writeTo(msg)
-        val soap = String(msg.toByteArray())
-        msg.close()
-
         val deviceInfo = params.uri.withPath("/upnp/control/deviceinfo")
+        val soap = message.toUnicodeString()
 
         val post = khttp.post(
                 url = deviceInfo.toASCIIString(),
                 headers = mapOf(
                         "Content-type" to "text/xml; charset=\"utf-8\"",
-                        "SOAPACTION" to "urn:dslforum-org:service:DeviceInfo:1#GetSecurityPort"
+                        "SOAPACTION" to "$urn#$method"
                 ),
                 data = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n$soap",
                 allowRedirects = true,
@@ -82,10 +80,13 @@ class TR064Connection(val params: TR064ConnectionParameters) : Closeable {
     }
 
     fun getPppInfo(): Map<String, String> {
+        val urn = "urn:dslforum-org:service:WANPPPConnection:1"
+        val method = "GetInfo"
+
         val message = Tr064SoapHelper.createSoapMessageWithChallenge(
                 msgFactory = messageFactory,
                 action = "GetInfo",
-                urn = "urn:dslforum-org:service:WANPPPConnection:1",
+                urn = urn,
                 params = params)
 
         val soap = message.toUnicodeString()
@@ -96,7 +97,7 @@ class TR064Connection(val params: TR064ConnectionParameters) : Closeable {
                 url = deviceInfo.toASCIIString(),
                 headers = mapOf(
                         "Content-type" to "text/xml; charset=\"utf-8\"",
-                        "SOAPACTION" to "urn:dslforum-org:service:WANPPPConnection:1#GetInfo"
+                        "SOAPACTION" to "$urn#$method"
                 ),
                 data = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n$soap",
                 allowRedirects = true,
