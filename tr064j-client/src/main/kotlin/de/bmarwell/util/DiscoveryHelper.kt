@@ -1,11 +1,10 @@
 package de.bmarwell.util
 
 import org.slf4j.LoggerFactory.getLogger
-import sun.plugin.dom.exception.InvalidStateException
-import java.net.SocketTimeoutException
 import java.net.DatagramPacket
 import java.net.DatagramSocket
 import java.net.InetAddress
+import java.net.SocketTimeoutException
 import java.util.regex.Pattern
 
 
@@ -96,8 +95,8 @@ fun Device.Companion.parse(packet : DatagramPacket) : Device {
     return Device(
             ip = packet.address.hostAddress,
             descriptionUrl = headers.get("LOCATION") ?: "no description",
-            server = headers.get("LOCATION") ?: throw InvalidStateException("no LOCATION"),
-            serviceType = headers.get("ST") ?: throw InvalidStateException("no ST"),
-            usn = headers.get("USN") ?: throw InvalidStateException("no USN")
+            server = headers.get("LOCATION") ?: throw IllegalStateException("no LOCATION"),
+            serviceType = headers.get("ST") ?: throw IllegalStateException("no ST"),
+            usn = headers.get("USN") ?: throw IllegalStateException("no USN")
     )
 }
