@@ -9,3 +9,5 @@ cache:
   directories:
     - '$HOME/.m2'
 
+install:
+  - mvn org.apache.maven.plugins:maven-dependency-plugin:2.1:get -DrepoUrl=http://jcenter.bintray.com  -Dartifact=khttp:khttp:0.1.0
