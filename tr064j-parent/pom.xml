@@ -19,9 +19,11 @@
     <dependency.cxf.version>3.2.4</dependency.cxf.version>
     <dependency.slf4j.version>1.7.25</dependency.slf4j.version>
     <dependency.logback.version>1.2.3</dependency.logback.version>
+    <dependency.khttp.version>0.1.0</dependency.khttp.version>
 
     <!-- test dependency versions -->
     <dependency.junit5.version>5.2.0</dependency.junit5.version>
+    <dependency.wiremock.version>2.17.0</dependency.wiremock.version>
   </properties>
 
   <dependencyManagement>
@@ -41,6 +43,13 @@
         <scope>test</scope>
       </dependency>
 
+      <!-- kotlin http lib -->
+      <!-- https://mvnrepository.com/artifact/khttp/khttp -->
+      <dependency>
+        <groupId>khttp</groupId>
+        <artifactId>khttp</artifactId>
+        <version>${dependency.khttp.version}</version>
+      </dependency>
 
 
       <!-- Test dependencies -->
@@ -48,6 +57,13 @@
         <groupId>org.junit</groupId>
         <artifactId>junit-bom</artifactId>
         <version>${dependency.junit5.version}</version>
+        <scope>test</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>com.github.tomakehurst</groupId>
+        <artifactId>wiremock</artifactId>
+        <version>${dependency.wiremock.version}</version>
         <scope>test</scope>
       </dependency>
     </dependencies>

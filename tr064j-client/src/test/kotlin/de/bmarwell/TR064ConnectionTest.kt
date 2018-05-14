@@ -1,7 +1,10 @@
 package de.bmarwell
 
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
+import com.github.tomakehurst.wiremock.junit.WireMockRule
 import org.hamcrest.CoreMatchers.`is`
 import org.junit.Assert.assertThat
+import org.junit.Rule
 import org.junit.Test
 import java.net.URI
 
@@ -23,15 +26,32 @@ import java.net.URI
  
 class TR064ConnectionTest {
 
+    @get:Rule
+    val rule = WireMockRule(options().dynamicPort())
+
     @Test
     fun testOpenConnection() {
-        val stdUri = URI.create("http://fritz.box:49000/")
-        val connectionParameters = TR064ConnectionParameters(stdUri)
+        val stdUri = URI.create(rule.url(""))
+        val connectionParameters = TR064ConnectionParameters(uri = stdUri, userId = "admin", password = "gurkensalat")
 
         val tR064Connection = TR064Connection(connectionParameters)
-        tR064Connection.getPPPInfo()
+        val pppInfo = tR064Connection.getPppInfo()
         tR064Connection.close()
 
         assertThat(tR064Connection.isClosed(), `is`(true))
+        assertThat(pppInfo["NewUserName"], `is`("aUserName"))
+    }
+
+    @Test
+    fun testSecurityPort() {
+        val stdUri = URI.create(rule.url(""))
+        val connectionParameters = TR064ConnectionParameters(uri = stdUri, userId = "admin", password = "gurkensalat")
+
+        val tR064Connection = TR064Connection(connectionParameters)
+        val portNum = tR064Connection.getSecurityPort()
+        tR064Connection.close()
+
+        assertThat(tR064Connection.isClosed(), `is`(true))
+        assertThat(portNum, `is`(49443))
     }
 }

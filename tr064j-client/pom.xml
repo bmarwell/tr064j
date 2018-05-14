@@ -35,6 +35,14 @@
       <scope>test</scope>
     </dependency>
 
+    <!-- kotlin http lib -->
+    <!-- https://mvnrepository.com/artifact/khttp/khttp -->
+    <dependency>
+      <groupId>khttp</groupId>
+      <artifactId>khttp</artifactId>
+    </dependency>
+
+
     <!-- logging -->
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -54,6 +62,13 @@
       <type>pom</type>
       <scope>import</scope>
     </dependency>
+
+    <dependency>
+      <groupId>com.github.tomakehurst</groupId>
+      <artifactId>wiremock</artifactId>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
 
   <build>
@@ -84,5 +99,14 @@
       </plugin>
     </plugins>
   </build>
+
+  <repositories>
+    <!-- for khttp -->
+    <repository>
+      <id>central</id>
+      <url>http://jcenter.bintray.com</url>
+    </repository>
+
+  </repositories>
 
 </project>

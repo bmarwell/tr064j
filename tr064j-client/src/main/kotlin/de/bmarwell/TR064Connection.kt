@@ -16,39 +16,138 @@
 
 package de.bmarwell
 
+import de.bmarwell.util.Tr064SoapHelper
+import de.bmarwell.util.realmAndNonce
+import de.bmarwell.util.toSoapMessage
+import de.bmarwell.util.toUnicodeString
+import org.slf4j.LoggerFactory
+import java.io.ByteArrayOutputStream
 import java.io.Closeable
 import java.net.URI
-import javax.xml.namespace.QName
-import org.slf4j.LoggerFactory
+import java.nio.charset.StandardCharsets
 import javax.xml.soap.MessageFactory
-import javax.xml.soap.SOAPFactory
-import java.io.ByteArrayOutputStream
-import javax.xml.soap.SOAPMessage
-
+import javax.xml.soap.SOAPElement
 
 
 class TR064Connection(val params: TR064ConnectionParameters) : Closeable {
 
     var closed: Boolean = false
 
-    val messageFactory = MessageFactory.newInstance()
+    private val messageFactory = MessageFactory.newInstance()!!
 
-    fun getPPPInfo() : String {
-        val message = messageFactory.createMessage()
-        val soapBody = message.soapBody
+    fun getSecurityPort(): Int {
+        val message = Tr064SoapHelper.createSoapMessageWithChallenge(
+                msgFactory = messageFactory,
+                action = "GetSecurityPort",
+                urn = "urn:dslforumorg:service:DeviceInfo:1",
+                params = params)
 
-        val soapFactory = SOAPFactory.newInstance()
-        // TODO: Insert FB PPP here
-        val bodyName = soapFactory.createName("GetInfo", "u", "urn:dslforumorg:service:DeviceInfo:1")
-        soapBody.addBodyElement(bodyName)
+        val msg = ByteArrayOutputStream()
+        message.writeTo(msg)
+        val soap = String(msg.toByteArray())
+        msg.close()
 
-        val out = ByteArrayOutputStream()
-        message.writeTo(out)
-        val strMsg = String(out.toByteArray())
+        val deviceInfo = params.uri.withPath("/upnp/control/deviceinfo")
 
-        log.debug("invoke: [{}].", strMsg)
+        val post = khttp.post(
+                url = deviceInfo.toASCIIString(),
+                headers = mapOf(
+                        "Content-type" to "text/xml; charset=\"utf-8\"",
+                        "SOAPACTION" to "urn:dslforum-org:service:DeviceInfo:1#GetSecurityPort"
+                ),
+                data = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n$soap",
+                allowRedirects = true,
+                timeout = 1000.0
+        )
 
-        TODO("implement correctly")
+        LOG.info("Response: [{}], [{}]",
+                post.statusCode,
+                String(post.content, StandardCharsets.UTF_8))
+
+        val responseMessage = post.toSoapMessage(messageFactory)
+
+        val infoResponse = responseMessage.soapBody.childElements.asSequence()
+                .filter { it is SOAPElement }
+                .map { it as SOAPElement }
+                .filter { "GetSecurityPortResponse" == it.elementName.localName }
+                .firstOrNull() ?: return -1
+
+        val port = infoResponse.childElements.asSequence()
+                .filter { it is SOAPElement }
+                .map { it as SOAPElement }
+                .find { "NewSecurityPort" == it.localName }
+                ?.textContent ?: return -1
+
+        return port.toIntOrNull(10) ?: -1
+    }
+
+    fun getPppInfo(): Map<String, String> {
+        val message = Tr064SoapHelper.createSoapMessageWithChallenge(
+                msgFactory = messageFactory,
+                action = "GetInfo",
+                urn = "urn:dslforum-org:service:WANPPPConnection:1",
+                params = params)
+
+        val soap = message.toUnicodeString()
+
+        val deviceInfo = params.uri.withPath("/upnp/control/wanpppconn1")
+
+        val post = khttp.post(
+                url = deviceInfo.toASCIIString(),
+                headers = mapOf(
+                        "Content-type" to "text/xml; charset=\"utf-8\"",
+                        "SOAPACTION" to "urn:dslforum-org:service:WANPPPConnection:1#GetInfo"
+                ),
+                data = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n$soap",
+                allowRedirects = true,
+                timeout = 1000.0
+        )
+
+        val msgResponse = post.toSoapMessage(messageFactory)
+
+        LOG.info("Response: [{}], [{}]",
+                post.statusCode,
+                msgResponse.toUnicodeString())
+
+        /* Post again */
+
+        val realmAndNonce = msgResponse.realmAndNonce() ?: throw IllegalStateException()
+
+        val authMessage = Tr064SoapHelper.createSoapMessageWithClientAuth(messageFactory,
+                action = "GetInfo",
+                params = params,
+                nonceAndRealm = realmAndNonce,
+                urn = "urn:dslforum-org:service:WANPPPConnection:1")
+        val authMessageAsXml = authMessage.toUnicodeString()
+
+        val postWithAuth = khttp.post(
+                url = deviceInfo.toASCIIString(),
+                headers = mapOf(
+                        "Content-type" to "text/xml; charset=\"utf-8\"",
+                        "SOAPACTION" to "urn:dslforum-org:service:WANPPPConnection:1#GetInfo"
+                ),
+                data = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n$authMessageAsXml",
+                allowRedirects = true,
+                timeout = 1000.0
+        )
+
+        val msgResponse2 = postWithAuth.toSoapMessage(messageFactory)
+
+        LOG.info("Response: [{}], [{}]",
+                post.statusCode,
+                msgResponse2.toUnicodeString())
+
+        val infoResponse = msgResponse2.soapBody.childElements.asSequence()
+                .filter { it is SOAPElement }
+                .map { it as SOAPElement }
+                .filter { "GetInfoResponse" == it.elementName.localName }
+                .firstOrNull() ?: return mapOf()
+
+        return infoResponse.childElements.asSequence()
+                .filter { it is SOAPElement }
+                .map { it as SOAPElement }
+                .map { it.elementName.localName to it.textContent }
+                .toMap()
     }
 
     override fun close() {
@@ -58,8 +157,18 @@ class TR064Connection(val params: TR064ConnectionParameters) : Closeable {
     fun isClosed(): Boolean = closed
 
     companion object {
-        val log = LoggerFactory.getLogger(TR064Connection::class.java)
+        val LOG = LoggerFactory.getLogger(TR064Connection::class.java)!!
     }
 }
 
-data class TR064ConnectionParameters(val uri: URI)
+data class TR064ConnectionParameters(val uri: URI, val userId: String?, val password: String?)
+
+fun URI.withPath(newPath: String): URI = URI(
+        this.scheme,
+        this.userInfo,
+        this.host,
+        this.port,
+        newPath,
+        this.query,
+        this.fragment
+)
