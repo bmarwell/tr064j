@@ -18,23 +18,9 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <kotlin.version>1.2.41</kotlin.version>
-    <junit.version>4.12</junit.version>
   </properties>
 
   <dependencies>
-    <dependency>
-      <groupId>org.jetbrains.kotlin</groupId>
-      <artifactId>kotlin-stdlib</artifactId>
-      <version>${kotlin.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.jetbrains.kotlin</groupId>
-      <artifactId>kotlin-test-junit</artifactId>
-      <version>${kotlin.version}</version>
-      <scope>test</scope>
-    </dependency>
-
     <!-- kotlin http lib -->
     <dependency>
       <groupId>com.github.kittinunf.fuel</groupId>

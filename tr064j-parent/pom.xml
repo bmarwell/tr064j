@@ -11,10 +11,13 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>tr064j-parent</artifactId>
+  <name>tr064j-parent</name>
 
   <packaging>pom</packaging>
 
   <properties>
+    <kotlin.version>1.2.41</kotlin.version>
+
     <dependency.immutables.version>2.5.6</dependency.immutables.version>
     <dependency.cxf.version>3.2.4</dependency.cxf.version>
     <dependency.slf4j.version>1.7.25</dependency.slf4j.version>
@@ -26,8 +29,39 @@
     <dependency.wiremock.version>2.17.0</dependency.wiremock.version>
   </properties>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.jetbrains.kotlin</groupId>
+      <artifactId>kotlin-stdlib</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jetbrains.kotlin</groupId>
+      <artifactId>kotlin-test-junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-library</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
   <dependencyManagement>
     <dependencies>
+      <!-- kotlin versions -->
+      <dependency>
+        <groupId>org.jetbrains.kotlin</groupId>
+        <artifactId>kotlin-stdlib</artifactId>
+        <version>${kotlin.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jetbrains.kotlin</groupId>
+        <artifactId>kotlin-test-junit</artifactId>
+        <version>${kotlin.version}</version>
+        <scope>test</scope>
+      </dependency>
+
       <!-- logging -->
       <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
       <dependency>
@@ -58,6 +92,15 @@
         <version>${dependency.junit5.version}</version>
         <scope>test</scope>
       </dependency>
+
+      <!-- https://mvnrepository.com/artifact/org.hamcrest/hamcrest-library -->
+      <dependency>
+        <groupId>org.hamcrest</groupId>
+        <artifactId>hamcrest-library</artifactId>
+        <version>1.3</version>
+        <scope>test</scope>
+      </dependency>
+
 
       <dependency>
         <groupId>com.github.tomakehurst</groupId>
