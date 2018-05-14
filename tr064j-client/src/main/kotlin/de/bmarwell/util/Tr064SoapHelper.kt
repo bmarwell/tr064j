@@ -48,6 +48,7 @@ object Tr064SoapHelper {
             prefix = "s"
             addAttribute(javax.xml.namespace.QName("s:encodingStyle"), "http://schemas.xmlsoap.org/soap/encoding/")
             removeNamespaceDeclaration("SOAP-ENV")
+            addNamespaceDeclaration("s", "http://schemas.xmlsoap.org/soap/envelope/")
         }
 
         return message
