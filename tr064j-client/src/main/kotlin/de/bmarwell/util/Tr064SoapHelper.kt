@@ -16,8 +16,8 @@
 
 package de.bmarwell.util
 
+import com.github.kittinunf.fuel.core.Response
 import de.bmarwell.TR064ConnectionParameters
-import khttp.responses.Response
 import org.slf4j.LoggerFactory.getLogger
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
@@ -99,12 +99,12 @@ object Tr064SoapHelper {
 
 fun Response.toSoapMessage(msgFactory: MessageFactory): SOAPMessage {
     val mimeHeaders = MimeHeaders().apply {
-        headers.forEach { entry -> setHeader(entry.key, entry.value) }
+        headers.forEach { entry -> setHeader(entry.key, entry.value.lastOrNull() ?: "") }
     }
 
     return msgFactory.createMessage(
             mimeHeaders,
-            ByteArrayInputStream(content)
+            ByteArrayInputStream(data)
     )
 }
 

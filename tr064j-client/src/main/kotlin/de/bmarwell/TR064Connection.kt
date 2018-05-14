@@ -16,6 +16,8 @@
 
 package de.bmarwell
 
+import com.github.kittinunf.fuel.httpPost
+import com.github.kittinunf.result.Result
 import de.bmarwell.util.Tr064SoapHelper
 import de.bmarwell.util.realmAndNonce
 import de.bmarwell.util.toSoapMessage
@@ -23,7 +25,6 @@ import de.bmarwell.util.toUnicodeString
 import org.slf4j.LoggerFactory
 import java.io.Closeable
 import java.net.URI
-import java.nio.charset.StandardCharsets
 import javax.xml.soap.MessageFactory
 import javax.xml.soap.SOAPElement
 
@@ -45,38 +46,41 @@ class TR064Connection(val params: TR064ConnectionParameters) : Closeable {
                 params = params)
 
         val deviceInfo = params.uri.withPath("/upnp/control/deviceinfo")
-        val soap = message.toUnicodeString()
+        val request = deviceInfo.toASCIIString().httpPost().body("<?xml version=\"1.0\" encoding=\"utf-8\"?> ${message.toUnicodeString()}")
+        request.headers.putAll(mapOf(
+                "Content-type" to "text/xml; charset=\"utf-8\"",
+                "SOAPACTION" to "$urn#$method"
+        ))
 
-        val post = khttp.post(
-                url = deviceInfo.toASCIIString(),
-                headers = mapOf(
-                        "Content-type" to "text/xml; charset=\"utf-8\"",
-                        "SOAPACTION" to "$urn#$method"
-                ),
-                data = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n$soap",
-                allowRedirects = true,
-                timeout = 1000.0
-        )
+        val result = request.responseString()
+        val port = when (result.third) {
+            is Result.Failure -> {
+                val ex = result.third.component2()
+                LOG.error("Problem posting.", ex)
 
-        LOG.info("Response: [{}], [{}]",
-                post.statusCode,
-                String(post.content, StandardCharsets.UTF_8))
+                -1
+            }
+            is Result.Success -> {
+                val responseMessage = result.second.toSoapMessage(messageFactory)
 
-        val responseMessage = post.toSoapMessage(messageFactory)
+                val infoResponse = responseMessage.soapBody.childElements.asSequence()
+                        .filter { it is SOAPElement }
+                        .map { it as SOAPElement }
+                        .filter { "GetSecurityPortResponse" == it.elementName.localName }
+                        .firstOrNull() ?: return -1
 
-        val infoResponse = responseMessage.soapBody.childElements.asSequence()
-                .filter { it is SOAPElement }
-                .map { it as SOAPElement }
-                .filter { "GetSecurityPortResponse" == it.elementName.localName }
-                .firstOrNull() ?: return -1
+                val port = infoResponse.childElements.asSequence()
+                        .filter { it is SOAPElement }
+                        .map { it as SOAPElement }
+                        .find { "NewSecurityPort" == it.localName }
+                        ?.textContent ?: return -1
 
-        val port = infoResponse.childElements.asSequence()
-                .filter { it is SOAPElement }
-                .map { it as SOAPElement }
-                .find { "NewSecurityPort" == it.localName }
-                ?.textContent ?: return -1
+                port.toIntOrNull(10) ?: -1
+            }
+            else -> -1
+        }
 
-        return port.toIntOrNull(10) ?: -1
+        return port
     }
 
     fun getPppInfo(): Map<String, String> {
@@ -89,26 +93,24 @@ class TR064Connection(val params: TR064ConnectionParameters) : Closeable {
                 urn = urn,
                 params = params)
 
-        val soap = message.toUnicodeString()
-
         val deviceInfo = params.uri.withPath("/upnp/control/wanpppconn1")
+        LOG.info("Post to: [{}].", deviceInfo)
+        val request = deviceInfo.toASCIIString().httpPost().body("<?xml version=\"1.0\" encoding=\"utf-8\"?> ${message.toUnicodeString()}")
+        request.headers.putAll(mapOf(
+                "Content-type" to "text/xml; charset=\"utf-8\"",
+                "SOAPACTION" to "$urn#$method"
+        ))
 
-        val post = khttp.post(
-                url = deviceInfo.toASCIIString(),
-                headers = mapOf(
-                        "Content-type" to "text/xml; charset=\"utf-8\"",
-                        "SOAPACTION" to "$urn#$method"
-                ),
-                data = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n$soap",
-                allowRedirects = true,
-                timeout = 1000.0
-        )
-
-        val msgResponse = post.toSoapMessage(messageFactory)
-
-        LOG.info("Response: [{}], [{}]",
-                post.statusCode,
-                msgResponse.toUnicodeString())
+        val result = request.responseString()
+        val msgResponse = when (result.third) {
+            is Result.Success -> result.second.toSoapMessage(messageFactory)
+            is Result.Failure -> {
+                val ex = result.third.component2()
+                LOG.error("Problem posting.", ex)
+                messageFactory.createMessage();
+            }
+            else -> messageFactory.createMessage()
+        }
 
         /* Post again */
 
@@ -119,24 +121,24 @@ class TR064Connection(val params: TR064ConnectionParameters) : Closeable {
                 params = params,
                 nonceAndRealm = realmAndNonce,
                 urn = "urn:dslforum-org:service:WANPPPConnection:1")
-        val authMessageAsXml = authMessage.toUnicodeString()
 
-        val postWithAuth = khttp.post(
-                url = deviceInfo.toASCIIString(),
-                headers = mapOf(
-                        "Content-type" to "text/xml; charset=\"utf-8\"",
-                        "SOAPACTION" to "urn:dslforum-org:service:WANPPPConnection:1#GetInfo"
-                ),
-                data = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n$authMessageAsXml",
-                allowRedirects = true,
-                timeout = 1000.0
-        )
+        val request2 = deviceInfo.toASCIIString().httpPost().body("<?xml version=\"1.0\" encoding=\"utf-8\"?> ${authMessage.toUnicodeString()}")
+        request.headers.putAll(mapOf(
+                "Content-type" to "text/xml; charset=\"utf-8\"",
+                "SOAPACTION" to "$urn#$method"
+        ))
 
-        val msgResponse2 = postWithAuth.toSoapMessage(messageFactory)
+        val result2 = request2.responseString()
+        val msgResponse2 = when (result2.third) {
+            is Result.Failure -> {
+                val ex = result2.third.component2()
+                LOG.error("Problem posting.", ex)
 
-        LOG.info("Response: [{}], [{}]",
-                post.statusCode,
-                msgResponse2.toUnicodeString())
+                messageFactory.createMessage();
+            }
+            is Result.Success -> result2.second.toSoapMessage(messageFactory)
+            else -> messageFactory.createMessage();
+        }
 
         val infoResponse = msgResponse2.soapBody.childElements.asSequence()
                 .filter { it is SOAPElement }

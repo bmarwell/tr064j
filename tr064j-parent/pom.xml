@@ -19,7 +19,7 @@
     <dependency.cxf.version>3.2.4</dependency.cxf.version>
     <dependency.slf4j.version>1.7.25</dependency.slf4j.version>
     <dependency.logback.version>1.2.3</dependency.logback.version>
-    <dependency.khttp.version>0.1.0</dependency.khttp.version>
+    <dependency.fuel.version>1.13.0</dependency.fuel.version>
 
     <!-- test dependency versions -->
     <dependency.junit5.version>5.2.0</dependency.junit5.version>
@@ -44,11 +44,10 @@
       </dependency>
 
       <!-- kotlin http lib -->
-      <!-- https://mvnrepository.com/artifact/khttp/khttp -->
       <dependency>
-        <groupId>khttp</groupId>
-        <artifactId>khttp</artifactId>
-        <version>${dependency.khttp.version}</version>
+        <groupId>com.github.kittinunf.fuel</groupId>
+        <artifactId>fuel</artifactId>
+        <version>${dependency.fuel.version}</version>
       </dependency>
 
 

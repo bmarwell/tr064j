@@ -36,10 +36,9 @@
     </dependency>
 
     <!-- kotlin http lib -->
-    <!-- https://mvnrepository.com/artifact/khttp/khttp -->
     <dependency>
-      <groupId>khttp</groupId>
-      <artifactId>khttp</artifactId>
+      <groupId>com.github.kittinunf.fuel</groupId>
+      <artifactId>fuel</artifactId>
     </dependency>
 
 
